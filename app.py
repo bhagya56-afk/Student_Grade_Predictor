@@ -1,30 +1,30 @@
-# =====================================================================
-# PROJECT FRONTEND: app.py (The Interactive Simple Web UI Portal)
-# =====================================================================
-
 import streamlit as st
 import pandas as pd
 import pickle
 import os
 
-# 1. Webpage UI configurations
-st.set_page_config(page_title="Grade Predictor Engine", page_icon="🎓", layout="centered")
+# Page configuration for a clean, professional dashboard
+st.set_page_config(
+    page_title="Academic Performance Analytics",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
-st.title("🎓 Student Performance Predictor")
-st.write("Drag the sliders below to adjust a student's attributes and click predict to calculate their final letter grade.")
+st.title("Academic Performance Predictor")
+st.caption("Enterprise grading inference engine driven by a trained Random Forest configuration.")
 st.markdown("---")
 
-# 2. Check if your trained model file exists before running
+# Verify model presence before execution
 if not os.path.exists('student_model.pkl'):
-    st.error("❌ Error: 'student_model.pkl' not found! Make sure it is in the exact same folder as this app.py file.")
+    st.error("Execution Error: 'student_model.pkl' target file not found.")
 else:
-    # Load your existing trained model brain
+    # Load the trained model artifact
     with open('student_model.pkl', 'rb') as model_file:
         loaded_model = pickle.load(model_file)
 
-    # 3. User Input Layout Form
-    st.subheader("📊 Adjust Student Attributes")
+    st.subheader("Input Parameters")
     
+    # Clean two-column layout for parameter adjustment
     col1, col2 = st.columns(2)
     with col1:
         study_hours = st.slider("Weekly Study Hours", min_value=1, max_value=10, value=6)
@@ -35,22 +35,21 @@ else:
 
     st.markdown("---")
 
-    # 4. Run Prediction Logic On Click
-    if st.button("🔮 Predict Final Grade Summary", use_container_width=True):
-        # Format inputs exactly how your model expects it
-        user_input_features = [[study_hours, attendance, assignment_score, internal_marks]]
+    # Prediction execution block
+    if st.button("Run Evaluation Profile", use_container_width=True):
+        # Format the features array array matches training layout
+        input_data = [[study_hours, attendance, assignment_score, internal_marks]]
         
-        # Query your AI model
-        prediction_output = loaded_model.predict(user_input_features)[0]
+        # Inference output extraction
+        predicted_grade = loaded_model.predict(input_data)[0]
         
-        # 5. Show Beautiful Visual Cards based on the resulting grade
-        st.subheader("🎯 Prediction Analysis Summary:")
+        st.subheader("Analysis Metrics Output")
         
-        if prediction_output == 'A':
-            st.success(f"### 🎉 Spectacular! The model predicts: **Grade {prediction_output}**")
-            st.balloons()
-        elif prediction_output == 'B':
-            st.info(f"### 👍 Solid Performance! The model predicts: **Grade {prediction_output}**")
-        else:
-            st.warning(f"### ⚠️ At Risk! The model predicts: **Grade {prediction_output}**")
-            st.caption("💡 *Tip: Helping this student improve attendance and internal marks will significantly push them into Grade B or A territory.*")
+        # Display the result using a clean, professional metric card component
+        st.metric(
+            label="Predicted Final Target Class", 
+            value=f"Grade {predicted_grade}"
+        )
+        
+        # Contextual summary footer message
+        st.info(f"System Confirmation: Model successfully computed output matrix mapping to classification category {predicted_grade}.")
